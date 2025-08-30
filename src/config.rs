@@ -1,0 +1,45 @@
+use clap::Parser;
+use figment::{
+    Figment,
+    providers::{Env, Format, Serialized, Toml},
+};
+use serde::{Deserialize, Serialize};
+
+#[derive(Parser, Debug, Deserialize, Serialize)]
+#[command(version)]
+pub(crate) struct Flags {
+    /// Path to config file
+    #[arg(short, long, default_value = "config.toml")]
+    pub(crate) config: String,
+
+    /// Only print changes
+    #[arg(short, long, default_value_t = false)]
+    pub(crate) quiet: bool,
+
+    /// Actually perform changes
+    #[arg(short, long, default_value_t = false)]
+    pub(crate) execute: bool,
+}
+
+#[derive(Deserialize, Debug)]
+pub(crate) struct NameConfig {
+    display_name_pronouns: bool,
+}
+
+#[derive(Deserialize, Debug)]
+pub(crate) struct Config {
+    member_dir: Option<String>,
+    group_dir: Option<String>,
+    token: String,
+    name: NameConfig,
+}
+
+impl Config {
+    pub(crate) fn load(flags: Flags) -> Result<Config, figment::Error> {
+        Figment::new()
+            .merge(Serialized::defaults(&flags))
+            .merge(Toml::file(flags.config))
+            .merge(Env::prefixed("MD2PK_"))
+            .extract()
+    }
+}
