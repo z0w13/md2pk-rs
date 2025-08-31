@@ -21,32 +21,33 @@ pub(crate) struct Flags {
     pub(crate) execute: bool,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 pub(crate) struct NameConfig {
     display_name_pronouns: bool,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 pub(crate) struct Config {
     scan_type: ScanConfig,
     token: String,
     name: NameConfig,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(tag = "type")]
 enum ScanConfig {
     Tag(TagScanConfig),
     Path(PathScanConfig),
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 pub(crate) struct TagScanConfig {
     root_dir: String,
     member_tags: Option<Vec<String>>,
     group_tags: Option<Vec<String>>,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 pub(crate) struct PathScanConfig {
     recursive: bool,
     member_dir: Option<String>,
