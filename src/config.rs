@@ -28,10 +28,29 @@ pub(crate) struct NameConfig {
 
 #[derive(Deserialize, Debug)]
 pub(crate) struct Config {
-    member_dir: Option<String>,
-    group_dir: Option<String>,
+    scan_type: ScanConfig,
     token: String,
     name: NameConfig,
+}
+
+#[derive(Deserialize, Debug)]
+enum ScanConfig {
+    Tag(TagScanConfig),
+    Path(PathScanConfig),
+}
+
+#[derive(Deserialize, Debug)]
+pub(crate) struct TagScanConfig {
+    root_dir: String,
+    member_tags: Option<Vec<String>>,
+    group_tags: Option<Vec<String>>,
+}
+
+#[derive(Deserialize, Debug)]
+pub(crate) struct PathScanConfig {
+    recursive: bool,
+    member_dir: Option<String>,
+    group_dir: Option<String>,
 }
 
 impl Config {
