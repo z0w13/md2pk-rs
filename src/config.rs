@@ -1,4 +1,4 @@
-use clap::Parser;
+use clap::{Parser, Subcommand};
 use figment::{
     Figment,
     providers::{Env, Format, Serialized, Toml},
@@ -7,18 +7,29 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Parser, Debug, Deserialize, Serialize)]
 #[command(version)]
-pub(crate) struct Flags {
+pub(crate) struct CommandLine {
     /// Path to config file
-    #[arg(short, long, default_value = "config.toml")]
+    #[arg(short, long, global = true, default_value = "config.toml")]
     pub(crate) config: String,
 
     /// Only print changes
-    #[arg(short, long, default_value_t = false)]
+    #[arg(short, long, global = true, default_value_t = false)]
     pub(crate) quiet: bool,
 
-    /// Actually perform changes
-    #[arg(short, long, default_value_t = false)]
-    pub(crate) execute: bool,
+    #[command(subcommand)]
+    pub(crate) command: Command,
+}
+
+#[derive(Subcommand, Debug, Serialize, Deserialize)]
+pub(crate) enum Command {
+    /// sync system from markdown to pluralkit
+    Sync {
+        /// Actually perform changes
+        #[arg(short, long, default_value_t = false)]
+        execute: bool,
+    },
+    /// generate config file
+    Config,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -110,7 +121,7 @@ impl Default for PathScanConfig {
 
 impl Config {
     #[expect(clippy::result_large_err, reason = "only used once")]
-    pub(crate) fn load(flags: Flags) -> eyre::Result<Config, figment::Error> {
+    pub(crate) fn load(flags: CommandLine) -> eyre::Result<Config, figment::Error> {
         Figment::new()
             .merge(Serialized::defaults(&flags))
             .merge(Toml::file(flags.config))
