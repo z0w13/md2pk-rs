@@ -10,3 +10,4 @@ eyre = "0.6.12"
 figment = { version = "0.10.19", features = ["env", "toml"] }
 figment_file_provider_adapter = "0.1.1"
 serde = { version = "1.0.219", features = ["derive"] }
+toml = { version = "0.8.23", features = ["preserve_order"] }
