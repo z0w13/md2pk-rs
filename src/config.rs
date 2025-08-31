@@ -35,7 +35,8 @@ pub(crate) struct Config {
 }
 
 impl Config {
-    pub(crate) fn load(flags: Flags) -> Result<Config, figment::Error> {
+    #[expect(clippy::result_large_err, reason = "only used once")]
+    pub(crate) fn load(flags: Flags) -> eyre::Result<Config, figment::Error> {
         Figment::new()
             .merge(Serialized::defaults(&flags))
             .merge(Toml::file(flags.config))

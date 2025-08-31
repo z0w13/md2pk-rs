@@ -1,11 +1,15 @@
 use clap::Parser;
+use color_eyre::eyre::Result;
 
 use crate::config::{Config, Flags};
 
 mod config;
-mod errors;
 
-fn main() {
+fn main() -> Result<()> {
+    color_eyre::install()?;
+
     let flags = Flags::parse();
-    let conf = Config::load(flags).expect("error parsing config");
+    let conf = Config::load(flags)?;
+
+    Ok(())
 }
