@@ -3,7 +3,7 @@ use color_eyre::eyre::Result;
 use eyre::eyre;
 use std::fs;
 
-use crate::config::{Command, CommandLine, Config, ScanConfig};
+use crate::config::{Command, CommandLine, Config};
 
 mod config;
 mod markdown;
@@ -30,10 +30,14 @@ fn main() -> Result<()> {
     let conf = Config::load(&cli)?;
     match &cli.command {
         Command::Sync { execute } => {
-            let files = match conf.scan_type {
-                ScanConfig::Tag(scan_cfg) => scanner_tags::run(scan_cfg)?,
-                ScanConfig::Path(scan_cfg) => scanner_paths::run(scan_cfg)?,
-            };
+            let files = match conf.scan_type.as_str() {
+                "tags" => scanner_tags::run(conf.tag_scanner),
+                "path" => scanner_paths::run(conf.path_scanner),
+                _ => Err(eyre!(
+                    "Unknown `scan_type` '{}' valid options are `tags` and `path`",
+                    conf.scan_type
+                )),
+            }?;
 
             println!("{files:?}");
 

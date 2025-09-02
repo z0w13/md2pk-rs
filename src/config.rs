@@ -51,7 +51,9 @@ impl Default for NameConfig {
 
 #[derive(Serialize, Deserialize, Debug)]
 pub(crate) struct Config {
-    pub(crate) scan_type: ScanConfig,
+    pub(crate) scan_type: String,
+    pub(crate) tag_scanner: TagScanConfig,
+    pub(crate) path_scanner: PathScanConfig,
     pub(crate) token: String,
     pub(crate) name: NameConfig,
 }
@@ -60,22 +62,11 @@ impl Default for Config {
     fn default() -> Self {
         Self {
             token: String::from("YOUR_PK_TOKEN"),
-            scan_type: ScanConfig::default(),
+            scan_type: String::from("path"),
+            tag_scanner: TagScanConfig::default(),
+            path_scanner: PathScanConfig::default(),
             name: NameConfig::default(),
         }
-    }
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-#[serde(tag = "type")]
-pub(crate) enum ScanConfig {
-    Tag(TagScanConfig),
-    Path(PathScanConfig),
-}
-
-impl Default for ScanConfig {
-    fn default() -> Self {
-        Self::Path(PathScanConfig::default())
     }
 }
 
