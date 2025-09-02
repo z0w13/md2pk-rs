@@ -51,9 +51,9 @@ impl Default for NameConfig {
 
 #[derive(Serialize, Deserialize, Debug)]
 pub(crate) struct Config {
-    scan_type: ScanConfig,
-    token: String,
-    name: NameConfig,
+    pub(crate) scan_type: ScanConfig,
+    pub(crate) token: String,
+    pub(crate) name: NameConfig,
 }
 
 impl Default for Config {
@@ -68,7 +68,7 @@ impl Default for Config {
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(tag = "type")]
-enum ScanConfig {
+pub(crate) enum ScanConfig {
     Tag(TagScanConfig),
     Path(PathScanConfig),
 }
@@ -81,9 +81,9 @@ impl Default for ScanConfig {
 
 #[derive(Serialize, Deserialize, Debug)]
 pub(crate) struct TagScanConfig {
-    root_dir: String,
-    member_tags: Option<Vec<String>>,
-    group_tags: Option<Vec<String>>,
+    pub(crate) root_dir: String,
+    pub(crate) member_tags: Option<Vec<String>>,
+    pub(crate) group_tags: Option<Vec<String>>,
 }
 
 impl Default for TagScanConfig {
@@ -104,9 +104,9 @@ impl Default for TagScanConfig {
 
 #[derive(Serialize, Deserialize, Debug)]
 pub(crate) struct PathScanConfig {
-    recursive: bool,
-    member_dir: Option<String>,
-    group_dir: Option<String>,
+    pub(crate) recursive: bool,
+    pub(crate) member_dir: Option<String>,
+    pub(crate) group_dir: Option<String>,
 }
 
 impl Default for PathScanConfig {
@@ -121,10 +121,10 @@ impl Default for PathScanConfig {
 
 impl Config {
     #[expect(clippy::result_large_err, reason = "only used once")]
-    pub(crate) fn load(flags: CommandLine) -> eyre::Result<Config, figment::Error> {
+    pub(crate) fn load(flags: &CommandLine) -> eyre::Result<Config, figment::Error> {
         Figment::new()
             .merge(Serialized::defaults(&flags))
-            .merge(Toml::file(flags.config))
+            .merge(Toml::file(&flags.config))
             .merge(Env::prefixed("MD2PK_"))
             .extract()
     }
