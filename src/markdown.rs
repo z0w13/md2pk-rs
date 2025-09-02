@@ -27,7 +27,7 @@ pub(crate) fn walker(
             None
         }
         Ok(path) => {
-            println!("OK   {}", path.path().display());
+            println!("OK    {}", path.path().display());
             path.file_type().is_file().then_some(path)
         }
     })

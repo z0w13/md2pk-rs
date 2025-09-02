@@ -1,3 +1,5 @@
+use std::collections::HashSet;
+
 use clap::{Parser, Subcommand};
 use figment::{
     Figment,
@@ -73,22 +75,22 @@ impl Default for Config {
 #[derive(Serialize, Deserialize, Debug)]
 pub(crate) struct TagScanConfig {
     pub(crate) root_dir: String,
-    pub(crate) member_tags: Option<Vec<String>>,
-    pub(crate) group_tags: Option<Vec<String>>,
+    pub(crate) member_tags: Option<HashSet<String>>,
+    pub(crate) group_tags: Option<HashSet<String>>,
 }
 
 impl Default for TagScanConfig {
     fn default() -> Self {
         Self {
             root_dir: String::from("~/notes/system"),
-            member_tags: Some(vec![
+            member_tags: Some(HashSet::from([
                 String::from("#plurality"),
                 String::from("#system/member"),
-            ]),
-            group_tags: Some(vec![
+            ])),
+            group_tags: Some(HashSet::from([
                 String::from("#plurality"),
                 String::from("#system/group"),
-            ]),
+            ])),
         }
     }
 }
