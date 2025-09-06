@@ -2,6 +2,7 @@ use clap::Parser;
 use color_eyre::eyre::Result;
 use eyre::eyre;
 use std::fs;
+use tabled::{builder::Builder, settings::Style};
 
 use crate::config::{Command, CommandLine, Config};
 
@@ -40,45 +41,52 @@ fn main() -> Result<()> {
                 )),
             }?;
 
-            println!("|={:=^102}=|", "GROUPS");
-            println!(
-                "| {:6} | {:40} | {:40} | {:7} |",
-                "ID", "Name", "Display Name", "Private"
-            );
-            println!("|-{:-<6}-+-{:-<40}-+-{:-<40}-+-{:-<7}-|", "", "", "", "");
+            let mut group_builder = Builder::new();
+            group_builder.push_record(["ID", "Name", "Display Name", "Prv"]);
             for group in files.groups {
-                println!(
-                    "| {:6} | {:40} | {:40} | {:7} |",
+                group_builder.push_record([
                     group.id,
                     group.name.unwrap_or_default(),
                     group.display_name.unwrap_or_default(),
-                    group
-                        .private
-                        .map_or_else(|| "N/A", |v| if v { "Y" } else { "N" }),
-                );
+                    String::from(
+                        group
+                            .private
+                            .map_or_else(|| "❔", |v| if v { "✔️" } else { "❌" }),
+                    ),
+                ]);
             }
-            println!("|={:=^102}=|", "");
+            let mut group_table = group_builder.build();
+            group_table.with(Style::modern_rounded());
+            println!("{group_table}");
 
             println!();
 
-            println!("|={:=^102}=|", "MEMBERS");
-            println!(
-                "| {:6} | {:40} | {:40} | {:7} |",
-                "ID", "Name", "Display Name", "Private"
-            );
-            println!("|-{:-<6}-+-{:-<40}-+-{:-<40}-+-{:-<7}-|", "", "", "", "");
+            let mut member_builder = Builder::new();
+            member_builder.push_record([
+                "ID",
+                "Name",
+                "Display Name",
+                "Prv",
+                "Pronouns",
+                "Proxy Tags",
+            ]);
             for member in files.members {
-                println!(
-                    "| {:6} | {:40} | {:40} | {:7} |",
+                member_builder.push_record([
                     member.id,
                     member.name.unwrap_or_default(),
                     member.display_name.unwrap_or_default(),
-                    member
-                        .private
-                        .map_or_else(|| "N/A", |v| if v { "Y" } else { "N" }),
-                );
+                    String::from(
+                        member
+                            .private
+                            .map_or_else(|| "❔", |v| if v { "✔️" } else { "❌" }),
+                    ),
+                    member.pronouns.join("\n"),
+                    member.proxy_tags.join("\n"),
+                ]);
             }
-            println!("|={:=^102}=|", "");
+            let mut member_table = member_builder.build();
+            member_table.with(Style::modern_rounded());
+            println!("{member_table}");
 
             Ok(())
         }

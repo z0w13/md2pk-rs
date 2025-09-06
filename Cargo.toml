@@ -11,5 +11,6 @@ figment = { version = "0.10.19", features = ["env", "toml"] }
 figment_file_provider_adapter = "0.1.1"
 frontmatter-gen = "0.0.5"
 serde = { version = "1.0.219", features = ["derive"] }
+tabled = "0.20.0"
 toml = { version = "0.8.23", features = ["preserve_order"] }
 walkdir = "2.5.0"
