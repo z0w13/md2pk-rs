@@ -40,33 +40,45 @@ fn main() -> Result<()> {
                 )),
             }?;
 
-            println!("|={:=^92}=|", "GROUPS");
-            println!("| {:6} | {:40} | {:40} |", "ID", "Name", "Display Name");
-            println!("| {:-<6} | {:-<40} | {:-<40} |", "", "", "");
+            println!("|={:=^102}=|", "GROUPS");
+            println!(
+                "| {:6} | {:40} | {:40} | {:7} |",
+                "ID", "Name", "Display Name", "Private"
+            );
+            println!("|-{:-<6}-+-{:-<40}-+-{:-<40}-+-{:-<7}-|", "", "", "", "");
             for group in files.groups {
                 println!(
-                    "| {:6} | {:40} | {:40} |",
+                    "| {:6} | {:40} | {:40} | {:7} |",
                     group.id,
                     group.name.unwrap_or_default(),
-                    group.display_name.unwrap_or_default()
+                    group.display_name.unwrap_or_default(),
+                    group
+                        .private
+                        .map_or_else(|| "N/A", |v| if v { "Y" } else { "N" }),
                 );
             }
-            println!("|={:=^92}=|", "");
+            println!("|={:=^102}=|", "");
 
             println!();
 
-            println!("|={:=^92}=|", "MEMBERS");
-            println!("| {:6} | {:40} | {:40} |", "ID", "Name", "Display Name");
-            println!("| {:-<6} | {:-<40} | {:-<40} |", "", "", "");
+            println!("|={:=^102}=|", "MEMBERS");
+            println!(
+                "| {:6} | {:40} | {:40} | {:7} |",
+                "ID", "Name", "Display Name", "Private"
+            );
+            println!("|-{:-<6}-+-{:-<40}-+-{:-<40}-+-{:-<7}-|", "", "", "", "");
             for member in files.members {
                 println!(
-                    "| {:6} | {:40} | {:40} |",
+                    "| {:6} | {:40} | {:40} | {:7} |",
                     member.id,
                     member.name.unwrap_or_default(),
-                    member.display_name.unwrap_or_default()
+                    member.display_name.unwrap_or_default(),
+                    member
+                        .private
+                        .map_or_else(|| "N/A", |v| if v { "Y" } else { "N" }),
                 );
             }
-            println!("|={:=^92}=|", "");
+            println!("|={:=^102}=|", "");
 
             Ok(())
         }
