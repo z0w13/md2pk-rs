@@ -1,0 +1,29 @@
+token = "YOUR_PK_TOKEN"
+scan_type = "path"
+
+[name]
+display_name_pronouns = false
+
+[fields.member]
+id = "ID"
+name = "Name"
+display_name = "Working Name"
+pronouns = "Pronouns"
+proxy_tags = "Proxy Tags"
+private = "Private"
+
+[fields.group]
+id = "ID"
+name = "Name"
+display_name = "Working Name"
+private = "Private"
+
+[path_scanner]
+recursive = false
+member_dir = "~/notes/system/members"
+group_dir = "~/notes/system/groups"
+
+[tag_scanner]
+root_dir = "~/notes/system"
+member_tags = [ "#system/member", "#plurality" ]
+group_tags = [ "#system/group", "#plurality" ]
