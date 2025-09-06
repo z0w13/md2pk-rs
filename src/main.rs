@@ -18,8 +18,8 @@ mod scanner_tags;
 
 fn get_files(conf: &Config) -> eyre::Result<ScanResult> {
     match conf.scan_type.as_str() {
-        "tags" => scanner_tags::run(&conf.tag_scanner, &conf.fields),
-        "path" => scanner_paths::run(&conf.path_scanner, &conf.fields),
+        "tags" => scanner_tags::run(&conf.scanner.tags, &conf.fields),
+        "path" => scanner_paths::run(&conf.scanner.path, &conf.fields),
         _ => Err(eyre!(
             "Unknown `scan_type` '{}' valid options are `tags` and `path`",
             conf.scan_type
