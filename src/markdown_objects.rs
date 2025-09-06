@@ -61,13 +61,39 @@ impl MarkdownMember {
             .and_then(|private_field| frontmatter.get(private_field))
             .and_then(|private_val| private_val.as_bool());
 
+        let pronouns: Vec<String> = cfg
+            .pronouns
+            .as_ref()
+            .and_then(|pronouns_field| frontmatter.get(pronouns_field))
+            .and_then(|pronouns_val| pronouns_val.as_array())
+            .and_then(|pronouns_array| {
+                pronouns_array
+                    .iter()
+                    .map(|v| v.as_str().map(String::from))
+                    .collect()
+            })
+            .unwrap_or_default();
+
+        let proxy_tags: Vec<String> = cfg
+            .proxy_tags
+            .as_ref()
+            .and_then(|proxy_tags_field| frontmatter.get(proxy_tags_field))
+            .and_then(|proxy_tags_val| proxy_tags_val.as_array())
+            .and_then(|proxy_tags_array| {
+                proxy_tags_array
+                    .iter()
+                    .map(|v| v.as_str().map(String::from))
+                    .collect()
+            })
+            .unwrap_or_default();
+
         Ok(Self {
             id: id_str.to_owned(),
             uuid,
             name,
             display_name,
-            pronouns: Vec::new(),
-            proxy_tags: Vec::new(),
+            pronouns,
+            proxy_tags,
             private,
             path: PathBuf::from(path),
         })
