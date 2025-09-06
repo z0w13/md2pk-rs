@@ -76,8 +76,8 @@ impl Default for Config {
 
 #[derive(Default, Serialize, Deserialize, Debug)]
 pub(crate) struct FieldConfig {
-    member: MemberFieldConfig,
-    group: GroupFieldConfig,
+    pub(crate) member: MemberFieldConfig,
+    pub(crate) group: GroupFieldConfig,
 }
 
 #[derive(Serialize, Deserialize, Debug)]

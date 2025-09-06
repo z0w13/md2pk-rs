@@ -7,6 +7,7 @@ use crate::config::{Command, CommandLine, Config};
 
 mod config;
 mod markdown;
+mod markdown_objects;
 mod scan_result;
 mod scanner_paths;
 mod scanner_tags;
@@ -31,15 +32,22 @@ fn main() -> Result<()> {
     match &cli.command {
         Command::Sync { execute } => {
             let files = match conf.scan_type.as_str() {
-                "tags" => scanner_tags::run(conf.tag_scanner),
-                "path" => scanner_paths::run(conf.path_scanner),
+                "tags" => scanner_tags::run(conf.tag_scanner, conf.fields),
+                "path" => scanner_paths::run(conf.path_scanner, conf.fields),
                 _ => Err(eyre!(
                     "Unknown `scan_type` '{}' valid options are `tags` and `path`",
                     conf.scan_type
                 )),
             }?;
 
-            println!("{files:?}");
+            println!("=== GROUPS  ===");
+            for group in files.groups {
+                println!(" - {}", group.id);
+            }
+            println!("=== MEMBERS ===");
+            for member in files.members {
+                println!(" - {}", member.id);
+            }
 
             Ok(())
         }

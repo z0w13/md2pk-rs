@@ -1,9 +1,14 @@
 use frontmatter_gen::Frontmatter;
 use std::collections::HashSet;
 
-use crate::{config::TagScanConfig, markdown, scan_result::ScanResult};
+use crate::{
+    config::{FieldConfig, TagScanConfig},
+    markdown,
+    markdown_objects::{MarkdownGroup, MarkdownMember},
+    scan_result::ScanResult,
+};
 
-fn parse_tags(frontmatter: Frontmatter) -> Option<HashSet<String>> {
+fn parse_tags(frontmatter: &Frontmatter) -> Option<HashSet<String>> {
     let Some(tags_val) = frontmatter.get("tags") else {
         println!("INFO  : no tags, skipping");
         return None;
@@ -28,7 +33,7 @@ fn parse_tags(frontmatter: Frontmatter) -> Option<HashSet<String>> {
     Some(tag_set)
 }
 
-pub(crate) fn run(cfg: TagScanConfig) -> eyre::Result<ScanResult> {
+pub(crate) fn run(cfg: TagScanConfig, field_cfg: FieldConfig) -> eyre::Result<ScanResult> {
     let mut members = Vec::new();
     let mut groups = Vec::new();
 
@@ -51,7 +56,7 @@ pub(crate) fn run(cfg: TagScanConfig) -> eyre::Result<ScanResult> {
             }
         };
 
-        let Some(tags) = parse_tags(frontmatter) else {
+        let Some(tags) = parse_tags(&frontmatter) else {
             println!("DEBUG {md_path}: no tags, skipping");
             continue;
         };
@@ -59,13 +64,26 @@ pub(crate) fn run(cfg: TagScanConfig) -> eyre::Result<ScanResult> {
         if let Some(member_tags) = &cfg.member_tags
             && member_tags.is_subset(&tags)
         {
-            members.push(md_path.clone())
+            match MarkdownMember::from_markdown(&md_path, &frontmatter, content, &field_cfg.member)
+            {
+                Err(err) => {
+                    println!("ERROR {md_path}: {err}");
+                    continue;
+                }
+                Ok(member) => members.push(member),
+            }
         }
 
         if let Some(group_tags) = &cfg.group_tags
             && group_tags.is_subset(&tags)
         {
-            groups.push(md_path.clone())
+            match MarkdownGroup::from_markdown(&md_path, &frontmatter, content, &field_cfg.group) {
+                Err(err) => {
+                    println!("ERROR {md_path}: {err}");
+                    continue;
+                }
+                Ok(group) => groups.push(group),
+            }
         }
     }
 
