@@ -42,10 +42,12 @@ fn main() -> Result<()> {
             }?;
 
             let mut group_builder = Builder::new();
-            group_builder.push_record(["ID", "Name", "Display Name", "Prv"]);
+            let total_groups = files.groups.len();
+            group_builder.push_record(["ID", "UUID", "Name", "Display Name", "Prv"]);
             for group in files.groups {
                 group_builder.push_record([
                     group.id,
+                    group.uuid.unwrap_or_default(),
                     group.name.unwrap_or_default(),
                     group.display_name.unwrap_or_default(),
                     String::from(
@@ -55,6 +57,7 @@ fn main() -> Result<()> {
                     ),
                 ]);
             }
+            group_builder.push_record(["", "", "", "", "", &format!("Total: {total_groups}")]);
             let mut group_table = group_builder.build();
             group_table.with(Style::modern_rounded());
             println!("{group_table}");
@@ -62,8 +65,10 @@ fn main() -> Result<()> {
             println!();
 
             let mut member_builder = Builder::new();
+            let total_members = files.members.len();
             member_builder.push_record([
                 "ID",
+                "UUID",
                 "Name",
                 "Display Name",
                 "Prv",
@@ -73,6 +78,7 @@ fn main() -> Result<()> {
             for member in files.members {
                 member_builder.push_record([
                     member.id,
+                    member.uuid.unwrap_or_default(),
                     member.name.unwrap_or_default(),
                     member.display_name.unwrap_or_default(),
                     String::from(
@@ -84,6 +90,7 @@ fn main() -> Result<()> {
                     member.proxy_tags.join("\n"),
                 ]);
             }
+            member_builder.push_record(["", "", "", "", "", &format!("Total: {total_members}")]);
             let mut member_table = member_builder.build();
             member_table.with(Style::modern_rounded());
             println!("{member_table}");
