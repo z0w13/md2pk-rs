@@ -11,8 +11,8 @@ fn scan_members(
     field_cfg: &MemberFieldConfig,
 ) -> eyre::Result<Vec<MarkdownMember>> {
     let mut members = Vec::new();
-    for entry in markdown::walker(&path, recursive) {
-        let file_content = match std::fs::read_to_string(&entry.path()) {
+    for entry in markdown::walker(path, recursive) {
+        let file_content = match std::fs::read_to_string(entry.path()) {
             Ok(val) => val,
             Err(err) => {
                 println!("ERROR {}: {err}", entry.path().display());
@@ -28,7 +28,7 @@ fn scan_members(
             }
         };
 
-        match MarkdownMember::from_markdown(entry.path(), &frontmatter, content, &field_cfg) {
+        match MarkdownMember::from_markdown(entry.path(), &frontmatter, content, field_cfg) {
             Err(err) => {
                 println!("ERROR {}: {err}", entry.path().display());
                 continue;
@@ -46,8 +46,8 @@ fn scan_groups(
     field_cfg: &GroupFieldConfig,
 ) -> eyre::Result<Vec<MarkdownGroup>> {
     let mut groups = Vec::new();
-    for entry in markdown::walker(&path, recursive) {
-        let file_content = match std::fs::read_to_string(&entry.path()) {
+    for entry in markdown::walker(path, recursive) {
+        let file_content = match std::fs::read_to_string(entry.path()) {
             Ok(val) => val,
             Err(err) => {
                 println!("ERROR {}: {err}", entry.path().display());
@@ -63,7 +63,7 @@ fn scan_groups(
             }
         };
 
-        match MarkdownGroup::from_markdown(entry.path(), &frontmatter, content, &field_cfg) {
+        match MarkdownGroup::from_markdown(entry.path(), &frontmatter, content, field_cfg) {
             Err(err) => {
                 println!("ERROR {}: {err}", entry.path().display());
                 continue;
