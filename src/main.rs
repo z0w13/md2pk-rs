@@ -4,7 +4,10 @@ use eyre::eyre;
 use std::fs;
 use tabled::{builder::Builder, settings::Style};
 
-use crate::config::{Command, CommandLine, Config};
+use crate::{
+    config::{Command, CommandLine, Config},
+    scan_result::ScanResult,
+};
 
 mod config;
 mod markdown;
@@ -12,6 +15,17 @@ mod markdown_objects;
 mod scan_result;
 mod scanner_paths;
 mod scanner_tags;
+
+fn get_files(conf: &Config) -> eyre::Result<ScanResult> {
+    match conf.scan_type.as_str() {
+        "tags" => scanner_tags::run(&conf.tag_scanner, &conf.fields),
+        "path" => scanner_paths::run(&conf.path_scanner, &conf.fields),
+        _ => Err(eyre!(
+            "Unknown `scan_type` '{}' valid options are `tags` and `path`",
+            conf.scan_type
+        )),
+    }
+}
 
 fn main() -> Result<()> {
     color_eyre::install()?;
@@ -32,15 +46,10 @@ fn main() -> Result<()> {
     let conf = Config::load(&cli)?;
     match &cli.command {
         Command::Sync { execute } => {
-            let files = match conf.scan_type.as_str() {
-                "tags" => scanner_tags::run(conf.tag_scanner, conf.fields),
-                "path" => scanner_paths::run(conf.path_scanner, conf.fields),
-                _ => Err(eyre!(
-                    "Unknown `scan_type` '{}' valid options are `tags` and `path`",
-                    conf.scan_type
-                )),
-            }?;
-
+            todo!();
+        }
+        Command::List => {
+            let files = get_files(&conf)?;
             let mut group_builder = Builder::new();
             let total_groups = files.groups.len();
             group_builder.push_record(["ID", "UUID", "Name", "Display Name", "Prv"]);

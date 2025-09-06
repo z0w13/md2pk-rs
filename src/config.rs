@@ -30,6 +30,8 @@ pub(crate) enum Command {
         #[arg(short, long, default_value_t = false)]
         execute: bool,
     },
+    /// list local groups and members
+    List,
     /// generate config file
     Config,
 }

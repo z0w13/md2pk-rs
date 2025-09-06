@@ -6,9 +6,9 @@ use crate::{
 };
 
 fn scan_members(
-    path: String,
+    path: &str,
     recursive: bool,
-    field_cfg: MemberFieldConfig,
+    field_cfg: &MemberFieldConfig,
 ) -> eyre::Result<Vec<MarkdownMember>> {
     let mut members = Vec::new();
     for entry in markdown::walker(&path, recursive) {
@@ -41,9 +41,9 @@ fn scan_members(
 }
 
 fn scan_groups(
-    path: String,
+    path: &str,
     recursive: bool,
-    field_cfg: GroupFieldConfig,
+    field_cfg: &GroupFieldConfig,
 ) -> eyre::Result<Vec<MarkdownGroup>> {
     let mut groups = Vec::new();
     for entry in markdown::walker(&path, recursive) {
@@ -75,15 +75,15 @@ fn scan_groups(
     Ok(groups)
 }
 
-pub(crate) fn run(cfg: PathScanConfig, field_cfg: FieldConfig) -> eyre::Result<ScanResult> {
-    let members = if let Some(member_dir) = cfg.member_dir {
-        scan_members(member_dir, cfg.recursive, field_cfg.member)?
+pub(crate) fn run(cfg: &PathScanConfig, field_cfg: &FieldConfig) -> eyre::Result<ScanResult> {
+    let members = if let Some(member_dir) = &cfg.member_dir {
+        scan_members(member_dir, cfg.recursive, &field_cfg.member)?
     } else {
         Vec::new()
     };
 
-    let groups = if let Some(group_dir) = cfg.group_dir {
-        scan_groups(group_dir, cfg.recursive, field_cfg.group)?
+    let groups = if let Some(group_dir) = &cfg.group_dir {
+        scan_groups(group_dir, cfg.recursive, &field_cfg.group)?
     } else {
         Vec::new()
     };

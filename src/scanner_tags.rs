@@ -33,7 +33,7 @@ fn parse_tags(frontmatter: &Frontmatter) -> Option<HashSet<String>> {
     Some(tag_set)
 }
 
-pub(crate) fn run(cfg: TagScanConfig, field_cfg: FieldConfig) -> eyre::Result<ScanResult> {
+pub(crate) fn run(cfg: &TagScanConfig, field_cfg: &FieldConfig) -> eyre::Result<ScanResult> {
     let mut members = Vec::new();
     let mut groups = Vec::new();
 
