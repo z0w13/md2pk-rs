@@ -54,6 +54,7 @@ impl Default for NameConfig {
 #[derive(Serialize, Deserialize, Debug)]
 pub(crate) struct Config {
     pub(crate) scan_type: String,
+    pub(crate) fields: FieldConfig,
     pub(crate) tag_scanner: TagScanConfig,
     pub(crate) path_scanner: PathScanConfig,
     pub(crate) token: String,
@@ -65,9 +66,62 @@ impl Default for Config {
         Self {
             token: String::from("YOUR_PK_TOKEN"),
             scan_type: String::from("path"),
+            fields: FieldConfig::default(),
             tag_scanner: TagScanConfig::default(),
             path_scanner: PathScanConfig::default(),
             name: NameConfig::default(),
+        }
+    }
+}
+
+#[derive(Default, Serialize, Deserialize, Debug)]
+pub(crate) struct FieldConfig {
+    member: MemberFieldConfig,
+    group: GroupFieldConfig,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub(crate) struct MemberFieldConfig {
+    pub(crate) id: String,
+    pub(crate) uuid: Option<String>,
+    pub(crate) name: Option<String>,
+    pub(crate) display_name: Option<String>,
+    pub(crate) pronouns: Option<String>,
+    pub(crate) proxy_tags: Option<String>,
+    pub(crate) private: Option<String>,
+}
+
+impl Default for MemberFieldConfig {
+    fn default() -> Self {
+        MemberFieldConfig {
+            id: String::from("id"),
+            uuid: None,
+            name: Some(String::from("name")),
+            display_name: Some(String::from("display_name")),
+            pronouns: Some(String::from("pronouns")),
+            proxy_tags: Some(String::from("proxy_tags")),
+            private: Some(String::from("private")),
+        }
+    }
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub(crate) struct GroupFieldConfig {
+    pub(crate) id: String,
+    pub(crate) uuid: Option<String>,
+    pub(crate) name: Option<String>,
+    pub(crate) display_name: Option<String>,
+    pub(crate) private: Option<String>,
+}
+
+impl Default for GroupFieldConfig {
+    fn default() -> Self {
+        GroupFieldConfig {
+            id: String::from("id"),
+            uuid: None,
+            name: Some(String::from("name")),
+            display_name: Some(String::from("display_name")),
+            private: Some(String::from("private")),
         }
     }
 }
