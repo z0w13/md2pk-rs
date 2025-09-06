@@ -40,14 +40,33 @@ fn main() -> Result<()> {
                 )),
             }?;
 
-            println!("=== GROUPS  ===");
+            println!("|={:=^92}=|", "GROUPS");
+            println!("| {:6} | {:40} | {:40} |", "ID", "Name", "Display Name");
+            println!("| {:-<6} | {:-<40} | {:-<40} |", "", "", "");
             for group in files.groups {
-                println!(" - {}", group.id);
+                println!(
+                    "| {:6} | {:40} | {:40} |",
+                    group.id,
+                    group.name.unwrap_or_default(),
+                    group.display_name.unwrap_or_default()
+                );
             }
-            println!("=== MEMBERS ===");
+            println!("|={:=^92}=|", "");
+
+            println!();
+
+            println!("|={:=^92}=|", "MEMBERS");
+            println!("| {:6} | {:40} | {:40} |", "ID", "Name", "Display Name");
+            println!("| {:-<6} | {:-<40} | {:-<40} |", "", "", "");
             for member in files.members {
-                println!(" - {}", member.id);
+                println!(
+                    "| {:6} | {:40} | {:40} |",
+                    member.id,
+                    member.name.unwrap_or_default(),
+                    member.display_name.unwrap_or_default()
+                );
             }
+            println!("|={:=^92}=|", "");
 
             Ok(())
         }

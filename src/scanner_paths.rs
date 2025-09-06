@@ -28,12 +28,7 @@ fn scan_members(
             }
         };
 
-        match MarkdownMember::from_markdown(
-            &entry.path().to_string_lossy(),
-            &frontmatter,
-            content,
-            &field_cfg,
-        ) {
+        match MarkdownMember::from_markdown(entry.path(), &frontmatter, content, &field_cfg) {
             Err(err) => {
                 println!("ERROR {}: {err}", entry.path().display());
                 continue;
@@ -68,12 +63,7 @@ fn scan_groups(
             }
         };
 
-        match MarkdownGroup::from_markdown(
-            &entry.path().to_string_lossy(),
-            &frontmatter,
-            content,
-            &field_cfg,
-        ) {
+        match MarkdownGroup::from_markdown(entry.path(), &frontmatter, content, &field_cfg) {
             Err(err) => {
                 println!("ERROR {}: {err}", entry.path().display());
                 continue;

@@ -37,13 +37,11 @@ pub(crate) fn run(cfg: TagScanConfig, field_cfg: FieldConfig) -> eyre::Result<Sc
     let mut members = Vec::new();
     let mut groups = Vec::new();
 
-    for md_path in markdown::walker(&cfg.root_dir, true)
-        .map(|entry| entry.path().to_string_lossy().into_owned())
-    {
-        let file_content = match std::fs::read_to_string(&md_path) {
+    for md_entry in markdown::walker(&cfg.root_dir, true) {
+        let file_content = match std::fs::read_to_string(md_entry.path()) {
             Ok(val) => val,
             Err(err) => {
-                println!("ERROR {md_path}: {err}");
+                println!("ERROR {}: {err}", md_entry.path().display());
                 continue;
             }
         };
@@ -51,23 +49,27 @@ pub(crate) fn run(cfg: TagScanConfig, field_cfg: FieldConfig) -> eyre::Result<Sc
         let (frontmatter, content) = match frontmatter_gen::extract(&file_content) {
             Ok(val) => val,
             Err(err) => {
-                println!("ERROR {md_path}: {err}");
+                println!("ERROR {}: {err}", md_entry.path().display());
                 continue;
             }
         };
 
         let Some(tags) = parse_tags(&frontmatter) else {
-            println!("DEBUG {md_path}: no tags, skipping");
+            println!("DEBUG {}: no tags, skipping", md_entry.path().display());
             continue;
         };
 
         if let Some(member_tags) = &cfg.member_tags
             && member_tags.is_subset(&tags)
         {
-            match MarkdownMember::from_markdown(&md_path, &frontmatter, content, &field_cfg.member)
-            {
+            match MarkdownMember::from_markdown(
+                md_entry.path(),
+                &frontmatter,
+                content,
+                &field_cfg.member,
+            ) {
                 Err(err) => {
-                    println!("ERROR {md_path}: {err}");
+                    println!("ERROR {}: {err}", md_entry.path().display());
                     continue;
                 }
                 Ok(member) => members.push(member),
@@ -77,9 +79,14 @@ pub(crate) fn run(cfg: TagScanConfig, field_cfg: FieldConfig) -> eyre::Result<Sc
         if let Some(group_tags) = &cfg.group_tags
             && group_tags.is_subset(&tags)
         {
-            match MarkdownGroup::from_markdown(&md_path, &frontmatter, content, &field_cfg.group) {
+            match MarkdownGroup::from_markdown(
+                md_entry.path(),
+                &frontmatter,
+                content,
+                &field_cfg.group,
+            ) {
                 Err(err) => {
-                    println!("ERROR {md_path}: {err}");
+                    println!("ERROR {}: {err}", md_entry.path().display());
                     continue;
                 }
                 Ok(group) => groups.push(group),
