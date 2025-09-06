@@ -19,7 +19,11 @@ in
   };
 
   # https://devenv.sh/packages/
-  packages = [ md2pk-rs ];
+  packages = [
+    # md2pk-rs
+    pkgs.pkg-config
+    pkgs.openssl
+  ];
 
   # https://devenv.sh/outputs/
   outputs = {

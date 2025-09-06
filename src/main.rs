@@ -1,6 +1,7 @@
 use clap::Parser;
 use color_eyre::eyre::Result;
 use eyre::eyre;
+use reqwest::header;
 use std::fs;
 use tabled::{builder::Builder, settings::Style};
 
@@ -12,6 +13,7 @@ use crate::{
 mod config;
 mod markdown;
 mod markdown_objects;
+mod pk;
 mod scan_result;
 mod scanner_paths;
 mod scanner_tags;
@@ -46,7 +48,27 @@ fn main() -> Result<()> {
     let conf = Config::load(&cli)?;
     match &cli.command {
         Command::Sync { execute } => {
-            todo!();
+            let mut auth_header_val = header::HeaderValue::from_str(&conf.token)?;
+            auth_header_val.set_sensitive(true);
+
+            let mut headers = header::HeaderMap::new();
+            headers.insert(header::AUTHORIZATION, auth_header_val);
+
+            let pk = reqwest::blocking::Client::builder()
+                // TODO: Embed version
+                .user_agent("md2pk-rs VERSION")
+                .default_headers(headers)
+                .build()?;
+
+            let resp = pk.get("https://api.pluralkit.me/v2/systems/@me").send()?;
+            let resp_json: pk::System = serde_json::from_str(&resp.text()?)?;
+
+            println!(
+                "Syncing System: {} ...",
+                resp_json.name.unwrap_or_else(|| resp_json.id)
+            );
+
+            Ok(())
         }
         Command::List => {
             let files = get_files(&conf)?;
