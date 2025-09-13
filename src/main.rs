@@ -77,8 +77,8 @@ fn main() -> Result<()> {
             group_builder.push_record(["ID", "UUID", "Name", "Display Name", "Prv"]);
             for group in files.groups {
                 group_builder.push_record([
-                    group.id,
-                    group.uuid.unwrap_or_default(),
+                    group.id.into(),
+                    group.uuid.map(String::from).unwrap_or_default(),
                     group.name.unwrap_or_default(),
                     group.display_name.unwrap_or_default(),
                     String::from(
@@ -108,8 +108,8 @@ fn main() -> Result<()> {
             ]);
             for member in files.members {
                 member_builder.push_record([
-                    member.id,
-                    member.uuid.unwrap_or_default(),
+                    member.id.into(),
+                    member.uuid.map(String::from).unwrap_or_default(),
                     member.name.unwrap_or_default(),
                     member.display_name.unwrap_or_default(),
                     String::from(

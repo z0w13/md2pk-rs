@@ -5,10 +5,38 @@ use eyre::eyre;
 use frontmatter_gen::Frontmatter;
 
 #[derive(Debug)]
+pub(crate) struct PluralKitID(String);
+
+impl From<&str> for PluralKitID {
+    fn from(value: &str) -> Self {
+        Self(String::from(value))
+    }
+}
+impl From<PluralKitID> for String {
+    fn from(value: PluralKitID) -> Self {
+        value.0
+    }
+}
+
+#[derive(Debug)]
+pub(crate) struct PluralKitUUID(String);
+
+impl From<&str> for PluralKitUUID {
+    fn from(value: &str) -> Self {
+        Self(String::from(value))
+    }
+}
+impl From<PluralKitUUID> for String {
+    fn from(value: PluralKitUUID) -> Self {
+        value.0
+    }
+}
+
+#[derive(Debug)]
 pub(crate) struct MarkdownMember {
     pub(crate) path: PathBuf,
-    pub(crate) id: String,
-    pub(crate) uuid: Option<String>,
+    pub(crate) id: PluralKitID,
+    pub(crate) uuid: Option<PluralKitUUID>,
     pub(crate) name: Option<String>,
     pub(crate) display_name: Option<String>,
     pub(crate) pronouns: Vec<String>,
@@ -35,7 +63,7 @@ impl MarkdownMember {
             .as_ref()
             .and_then(|uuid_field| frontmatter.get(uuid_field))
             .and_then(|uuid_val| uuid_val.as_str())
-            .map(|str| str.to_owned());
+            .map(PluralKitUUID::from);
 
         let name = cfg
             .name
@@ -88,7 +116,7 @@ impl MarkdownMember {
             .unwrap_or_default();
 
         Ok(Self {
-            id: id_str.to_owned(),
+            id: PluralKitID::from(id_str),
             uuid,
             name,
             display_name,
@@ -103,8 +131,8 @@ impl MarkdownMember {
 #[derive(Debug)]
 pub(crate) struct MarkdownGroup {
     pub(crate) path: PathBuf,
-    pub(crate) id: String,
-    pub(crate) uuid: Option<String>,
+    pub(crate) id: PluralKitID,
+    pub(crate) uuid: Option<PluralKitUUID>,
     pub(crate) name: Option<String>,
     pub(crate) display_name: Option<String>,
     pub(crate) private: Option<bool>,
@@ -129,7 +157,7 @@ impl MarkdownGroup {
             .as_ref()
             .and_then(|uuid_field| frontmatter.get(uuid_field))
             .and_then(|uuid_val| uuid_val.as_str())
-            .map(|str| str.to_owned());
+            .map(PluralKitUUID::from);
 
         let name = cfg
             .name
@@ -156,7 +184,7 @@ impl MarkdownGroup {
             .and_then(|private_val| private_val.as_bool());
 
         Ok(Self {
-            id: id_str.to_owned(),
+            id: PluralKitID::from(id_str),
             uuid,
             name,
             display_name,
