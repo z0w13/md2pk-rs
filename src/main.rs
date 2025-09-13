@@ -65,7 +65,7 @@ fn main() -> Result<()> {
 
             println!(
                 "Syncing System: {} ...",
-                resp_json.name.unwrap_or_else(|| resp_json.id)
+                resp_json.name.unwrap_or(resp_json.id)
             );
 
             Ok(())
