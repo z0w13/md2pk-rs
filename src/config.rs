@@ -57,7 +57,8 @@ impl Default for NameConfig {
 pub(crate) struct Config {
     pub(crate) scan_type: String,
     pub(crate) fields: FieldConfig,
-    pub(crate) scanner: ScanConfig,
+    pub(crate) path_scanner: PathScanConfig,
+    pub(crate) tag_scanner: TagScanConfig,
     pub(crate) token: String,
     pub(crate) name: NameConfig,
 }
@@ -68,16 +69,11 @@ impl Default for Config {
             token: String::from("YOUR_PK_TOKEN"),
             scan_type: String::from("path"),
             fields: FieldConfig::default(),
-            scanner: ScanConfig::default(),
+            tag_scanner: TagScanConfig::default(),
+            path_scanner: PathScanConfig::default(),
             name: NameConfig::default(),
         }
     }
-}
-
-#[derive(Default, Serialize, Deserialize, Debug)]
-pub(crate) struct ScanConfig {
-    pub(crate) tags: TagScanConfig,
-    pub(crate) path: PathScanConfig,
 }
 
 #[derive(Default, Serialize, Deserialize, Debug)]
