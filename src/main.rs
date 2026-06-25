@@ -1,7 +1,7 @@
 use clap::Parser;
 use color_eyre::eyre::Result;
 use eyre::eyre;
-use reqwest::header;
+use pkrs_fork::{client::PkClient, model::PkId};
 use std::fs;
 use tabled::{builder::Builder, settings::Style};
 
@@ -13,7 +13,6 @@ use crate::{
 mod config;
 mod markdown;
 mod markdown_objects;
-mod pk;
 mod scan_result;
 mod scanner_paths;
 mod scanner_tags;
@@ -29,7 +28,8 @@ fn get_files(conf: &Config) -> eyre::Result<ScanResult> {
     }
 }
 
-fn main() -> Result<()> {
+#[tokio::main]
+async fn main() -> Result<()> {
     color_eyre::install()?;
 
     let cli = CommandLine::parse();
@@ -48,25 +48,16 @@ fn main() -> Result<()> {
     let conf = Config::load(&cli)?;
     match &cli.command {
         Command::Sync { execute } => {
-            let mut auth_header_val = header::HeaderValue::from_str(&conf.token)?;
-            auth_header_val.set_sensitive(true);
-
-            let mut headers = header::HeaderMap::new();
-            headers.insert(header::AUTHORIZATION, auth_header_val);
-
-            let pk = reqwest::blocking::Client::builder()
+            let pk = PkClient {
                 // TODO: Embed version
-                .user_agent("md2pk-rs VERSION")
-                .default_headers(headers)
-                .build()?;
+                user_agent: "md2pk-rs VERSION".to_string(),
+                token: conf.token,
+                ..Default::default()
+            };
 
-            let resp = pk.get("https://api.pluralkit.me/v2/systems/@me").send()?;
-            let resp_json: pk::System = serde_json::from_str(&resp.text()?)?;
+            let system = pk.get_system(&PkId("@me".into())).await?;
 
-            println!(
-                "Syncing System: {} ...",
-                resp_json.name.unwrap_or(resp_json.id)
-            );
+            println!("Syncing System: {} ...", system.name.unwrap_or(system.id.0));
 
             Ok(())
         }
