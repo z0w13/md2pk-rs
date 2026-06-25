@@ -77,13 +77,21 @@ fn scan_groups(
 
 pub(crate) fn run(cfg: &PathScanConfig, field_cfg: &FieldConfig) -> eyre::Result<ScanResult> {
     let members = if let Some(member_dir) = &cfg.member_dir {
-        scan_members(member_dir, cfg.recursive, &field_cfg.member)?
+        scan_members(
+            &shellexpand::tilde(member_dir),
+            cfg.recursive,
+            &field_cfg.member,
+        )?
     } else {
         Vec::new()
     };
 
     let groups = if let Some(group_dir) = &cfg.group_dir {
-        scan_groups(group_dir, cfg.recursive, &field_cfg.group)?
+        scan_groups(
+            &shellexpand::tilde(group_dir),
+            cfg.recursive,
+            &field_cfg.group,
+        )?
     } else {
         Vec::new()
     };
